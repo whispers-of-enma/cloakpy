@@ -76,14 +76,36 @@ def validate_ip_addresses(address_list):
     return address_list
 
 def validate_ports(ports):
-    ports = ports if isinstance(ports, list) else [ports]
+
+    if isinstance(ports, str):
+        ports = _compute_int_range(ports)
 
     for port in ports:
-        if not isinstance(port, int) or not (0 <= port <= 65535):
-            print.error(f'Error: port {port} is not an integer.')
+        if not isinstance(port, int):
+            print.error(f'Error: port not an integer: {port}')
+            sys.exit()
+        elif not not (0 <= port <= 65535):
+            print.error(f'Error: port {port} not in range (0 - 65535)')
             sys.exit()
     
     return ports
+
+# Guaranteed string_range = str
+def _compute_int_range(string_range):
+    integer_range = set()
+
+    for part in string_range.split(','):
+       try:
+            if '-' in part:
+                start, end = part.split('-')
+                integer_range.update(range(int(start), int(end) + 1))
+            else:
+                integer_range.add(int(part))
+       except ValueError as e:
+           print.error(f'Error: port not an integer: {part}')
+           sys.exit()
+
+    return sorted(integer_range)
 
 def force_list(item):
     return item if isinstance(item, list) else [item]
