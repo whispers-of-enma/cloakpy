@@ -1,3 +1,9 @@
-main.py
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
 test.py
+main.py
 notes.md
+.VSCodeCounter/
