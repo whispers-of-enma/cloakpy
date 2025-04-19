@@ -60,4 +60,4 @@ if __name__ == '__main__':
     if result:
         print.success(f'Host {args.target_ip} is up: {mac_address} (vendor: {vendor})')
     else:
-        print.warning(f'Unable to get MAC address from {args.target_ip}')
+        print.warning(f'Host {args.target_ip} is unreachable')

@@ -17,6 +17,8 @@ input_types = {
 
 @validation.input_types(input_types)
 def run(target_ip: str, port: int, timeout: int = 1):
+    print.info(f'\ntarget_ip: {target_ip}, port: {port}, timeout: {timeout}')
+    return True
     header4 = scapy.TCP(dport=port, flags='S', sport=random.randint(1024, 65535))
     header3 = scapy.IP(dst=target_ip)
     pdu = header3 / header4
