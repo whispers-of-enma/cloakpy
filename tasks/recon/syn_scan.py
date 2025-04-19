@@ -1,8 +1,8 @@
 import argparse
 
 import scapy.all as scapy
-import socket
 import random
+import time
 
 from core.record import singleton as record
 from core.structures import port_status
@@ -11,15 +11,14 @@ from utils import validation
 
 input_types = {
     'target_ip': str,
+    'target_port': int,
     'timeout': int,
     'port': int, 
 }
 
 @validation.input_types(input_types)
-def run(target_ip: str, port: int, timeout: int = 1):
-    print.info(f'\ntarget_ip: {target_ip}, port: {port}, timeout: {timeout}')
-    return True
-    header4 = scapy.TCP(dport=port, flags='S', sport=random.randint(1024, 65535))
+def run(target_ip: str, target_port: int, timeout: int = 1):
+    header4 = scapy.TCP(dport=target_port, flags='S', sport=random.randint(1024, 65535))
     header3 = scapy.IP(dst=target_ip)
     pdu = header3 / header4
 
@@ -30,14 +29,14 @@ def run(target_ip: str, port: int, timeout: int = 1):
     
     if response.haslayer(scapy.TCP):
         if response[scapy.TCP].flags == 0x12:
-            record.add_port(target_ip, port, 'tcp', port_status.OPEN)
+            record.add_port(target_ip, target_port, 'tcp', port_status.OPEN)
             header4.flags = 'R'
             pdu = header3 / header4
             scapy.send(pdu, verbose=False)
         elif response[scapy.TCP] == 0x14:
-            record.add_port(target_ip, port, 'tcp', port_status.CLOSED)
+            record.add_port(target_ip, target_port, 'tcp', port_status.CLOSED)
         else:
-            record.add_port(target_ip, port, 'tcp', port_status.UNREACH)
+            record.add_port(target_ip, target_port, 'tcp', port_status.UNREACH)
         
         return True
     
@@ -52,7 +51,7 @@ if __name__ == '__main__':
     
     result = run(
         target_ip=args.target_ip,
-        port=args.port,
+        target_port=args.port,
         timeout=args.timeout,
     )
 

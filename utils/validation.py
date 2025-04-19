@@ -75,16 +75,18 @@ def validate_ip_addresses(address_list):
     
     return address_list
 
-def validate_ports(ports):
+def validate_ports(ports: str | list | int):
 
-    if isinstance(ports, str):
+    if isinstance(ports, int):
+        ports = [ports]
+    elif isinstance(ports, str):
         ports = _compute_int_range(ports)
 
     for port in ports:
         if not isinstance(port, int):
             print.error(f'Error: port not an integer: {port}')
             sys.exit()
-        elif not not (0 <= port <= 65535):
+        elif not (0 <= port <= 65535):
             print.error(f'Error: port {port} not in range (0 - 65535)')
             sys.exit()
     
