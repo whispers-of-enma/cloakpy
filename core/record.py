@@ -2,7 +2,8 @@ import threading
 import json
 import copy
 
-from core import data_structs
+from core.structures import ExclusiveListManager as ELM
+from core.structures import port_status
 
 class Record:
     _instance = None
@@ -46,8 +47,8 @@ class Record:
             host = self.hosts.setdefault(host_ip, {})
             
             ports = host.setdefault('ports', {
-                'tcp': data_structs.ExclusiveListManager(['opened', 'closed', 'filtered/unreachable']),
-                'udp': data_structs.ExclusiveListManager(['opened', 'closed', 'filtered/unreachable']),
+                'tcp': ELM([port_status.OPEN, port_status.CLOSED, port_status.UNREACH]),
+                'udp': ELM([port_status.OPEN, port_status.CLOSED, port_status.UNREACH]),
             })
             
             ports[protocol].add(status, port)
@@ -67,6 +68,15 @@ class Record:
                 return copy.deepcopy(ports[protocol])
             
             return copy.deepcopy(ports[protocol][status])
+        
+    def get_port_status(self, host_ip, protocol, port):
+        with self._data_lock:
+            host = self.hosts.get(host_ip)
+
+            if not host or 'ports' not in host:
+                return None
+            
+            return host['ports'][protocol].get_item_type(port)
 
     def print_hosts(self):
         print(json.dumps(self._serialize_hosts(), indent=4, sort_keys=True))

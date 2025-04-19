@@ -1,5 +1,6 @@
-import subprocess
 import argparse
+
+import subprocess
 
 from core.record import singleton as record
 from utils import pretty_print as print
@@ -31,14 +32,17 @@ if __name__ == '__main__':
     parser.add_argument('-c', nargs='?', default=5, help='amount of pings to send.', type=int, metavar='count', dest='count')
     args = parser.parse_args()
 
+
     result = run(
         target_ip=args.target_ip,
         timeout=args.timeout,
         count=args.count,
     )
 
+    ttl = record.get_host_spec(args.target_ip, 'ttl')
+
     if result:
-        print.success(f'Host {args.target_ip} is reachable (TTL = {record.get_host_spec(args.target_ip, 'ttl')})')
+        print.success(f'Host {args.target_ip} is reachable (TTL = {ttl})')
     else:
         print.warning(f'Host {args.target_ip} is unreachable.')
 

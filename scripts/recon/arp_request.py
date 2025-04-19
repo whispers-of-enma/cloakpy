@@ -1,6 +1,7 @@
+import argparse
+
 import scapy.all as scapy
 import requests
-import argparse
 
 from core.record import singleton as record
 from utils import pretty_print as print
@@ -33,7 +34,6 @@ def run(target_ip: str, iface: str | None, timeout: int):
             data = response.json()
             vendor =  data[0].get('company', 'unknown') if data else 'unknown'
     except Exception as e:
-        print.error(e)
         vendor = 'error'
 
     record.add_host_spec(target_ip, 'mac_vendor', vendor)
@@ -54,7 +54,10 @@ if __name__ == '__main__':
         iface=args.iface,
     )
 
+    mac_address = record.get_host_spec(args.target_ip, 'mac_address')
+    vendor = record.get_host_spec(args.target_ip, 'vendor')
+
     if result:
-        print.success(f'Host {args.target_ip} has MAC addres {record.get_host_spec(args.target_ip, 'mac_address')} (vendor: {record.get_host_spec(args.target_ip, 'mac_vendor')})')
+        print.success(f'Host {args.target_ip} is up: {mac_address} (vendor: {vendor})')
     else:
         print.warning(f'Unable to get MAC address from {args.target_ip}')

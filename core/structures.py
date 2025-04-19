@@ -1,6 +1,12 @@
 import bisect
 
+
+from collections import namedtuple
+from enum import Enum
+
 from utils import pretty_print as print
+
+port_status = namedtuple('port_status', ['OPEN', 'CLOSED', 'UNREACH'])(OPEN='open', CLOSED='closed', UNREACH='filtered/unreachable')
 
 class ExclusiveListManager:
     def __init__(self, names: list[str]):
@@ -26,6 +32,10 @@ class ExclusiveListManager:
             return None
         return self._lists[list_name]
     
+    def get_item_type(self, item):
+        for key, value in self._lists.items():
+            if item in value:
+                return key
+    
     def to_dict(self):
         return self._lists
-
