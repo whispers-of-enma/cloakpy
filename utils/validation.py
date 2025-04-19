@@ -7,7 +7,7 @@ import utils.file_reader as file_reader
 
 from functools import wraps
 
-def function_types(expected_types: dict):
+def input_types(expected_types: dict):
     def decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):

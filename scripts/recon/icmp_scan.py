@@ -1,10 +1,9 @@
 import subprocess
 import argparse
 
-import utils.validation as validation
-import utils.pretty_print as print
-
 from core.record import singleton as record
+from utils import pretty_print as print
+from utils import validation
 
 input_types = {
     'target_ip': str,
@@ -12,7 +11,7 @@ input_types = {
     'count': int, 
 }
 
-@validation.function_types(input_types)
+@validation.input_types(input_types)
 def run(target_ip: str, timeout: int = 1, count: int = 1) -> bool:
     command = ['ping', '-c', str(count), '-W', str(timeout), target_ip]
     result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
@@ -39,7 +38,7 @@ if __name__ == '__main__':
     )
 
     if result:
-        print.info(f'Host {args.target_ip} is reachable (TTL = {record.get_host_spec(args.target_ip, 'ttl')})')
+        print.success(f'Host {args.target_ip} is reachable (TTL = {record.get_host_spec(args.target_ip, 'ttl')})')
     else:
-        print.info(f'Host {args.target_ip} is unreachable.')
+        print.warning(f'Host {args.target_ip} is unreachable.')
 

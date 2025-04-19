@@ -5,7 +5,7 @@ from rich.console import Console
 
 init(autoreset=True)
 
-def sucess(message):
+def success(message):
     print(Fore.GREEN + Style.BRIGHT + message)
 
 def warning(message):
